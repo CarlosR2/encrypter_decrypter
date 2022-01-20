@@ -62,7 +62,7 @@
                         browser
                         to the one you regularly use, preferably with no extensions or plugins installed.</li>
                     <li>Before any input, disconnect your computer/phone from internet.</li>
-                    <li>Use a strong password. Once you get your encrypted data/file close all the incognito browser
+                    <li>Use a strong key (password). Once you get your encrypted data/file close all the incognito browser
                         windows.
                     </li>
                     <li>You may now reconnect to the internet</li>
@@ -122,6 +122,10 @@
             </div>
             <br />
         </div>
+        <div style="text-align: right;margin-top: 20px;">
+            Source: <a href="https://github.com/CarlosR2/encrypter_decrypter"
+                target="_BLANK">https://github.com/CarlosR2/encrypter_decrypter</a>
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"
         integrity="sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA=="
@@ -163,6 +167,13 @@
 
             let message = document.querySelector('#message').value;
             let key = document.querySelector('#key').value;
+
+            if(!message){
+                alert('Please type a message'); return false;
+            }
+            if(!key){
+                alert('Please type a key. The more difficult to guess, the better'); return false;
+            }
 
             let op = document.querySelector('input[type=radio][name=operation]:checked').value;
             let alg = document.querySelector('input[type=radio][name=algorithm]:checked').value;
@@ -228,8 +239,6 @@
             };
             return funcs;
         })(CryptoJS);
-        var html_str = new XMLSerializer().serializeToString(document);
-
     </script>
 </body>
 
