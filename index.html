@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Encrypter / Decrypter</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <style>
+        .red {
+            color: red
+        }
+        .green {
+            color: green
+        }
+        input.focused {
+            box-shadow: 0px 0px 5px green;
+            background: #fff499;
+        }
+        input {
+            max-width: 100%;
+        }
+        body {
+            background-color: #f0f3f5;
+            color: #333;
+            font-family: monospace, Arial, Helvetica, sans-serif;
+        }
+        #app {
+            padding: 50px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            min-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="" id="app">
+        <!-- container -->
+        <br />
+        <div class="container">
+            <h1>Encrypt / Decrypt any message</h1>
+
+            <div>
+                <p>This is a tool to encrypt / decrypt messages with your selected key (password) and algorithm</p>
+            </div>
+            <div class="alert alert-warning">
+                <h4>For good security, follow these steps</h4>
+                <ol>
+                    <li>Use this tool only on computer and phones you trust to be secure.</li>
+                    <li>Use this website in incognito mode in an up-to-date browser, and, if possible, in a different
+                        browser
+                        to the one you regularly use, preferably with no extensions or plugins installed.</li>
+                    <li>Before any input, disconnect your computer/phone from internet.</li>
+                    <li>Use a strong password. Once you get your encrypted data/file close all the incognito browser
+                        windows.
+                    </li>
+                    <li>You may now reconnect to the internet</li>
+                </ol>
+                <h5>For paranoid security</h5>
+                <ul>
+                    <li>Use a virtual machine with a clean image from a source you trust and follow the steps above</li>
+                </ul>
+                <h5>Check it works securely</h5>
+                <ul>
+                    <li>Open this website in another device, follow the steps above and introduce the encrypted message
+                        and the key: you should see the original message.</li>
+                </ul>
+                 
+            </div>
+            <textarea id="message" class="form-control" placeholder="Message to encrypt / decrypt"></textarea>
+            <div style="text-align: right;">
+                <a href="" id="upload_dat_file">Upload DAT file</a>
+                <input id="upload_dat_file_picker" type="file" style="display: none" />
+            </div>
+            <br />
+            <input id="key" type="text" class="form-control" placeholder="Encryption key (password)">
+            <br />
+            <div>
+                <div class="row">
+                    <div class="col-2">
+                        Operation:
+                    </div>
+                    <div class="col-10">
+                        <label><input name="operation" value="enc" checked type="radio"> Encrypt</label> &nbsp; &nbsp;
+                        &nbsp; &nbsp;
+                        <label><input name="operation" value="dec" type="radio"> Decrypt</label> <br />
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="row">
+                    <div class="col-2">
+                        Algorithm:
+                    </div>
+                    <div class="col-10">
+                        <label><input name="algorithm" value="tripledes" checked type="radio"> TripleDES</label> &nbsp;
+                        &nbsp; &nbsp;
+                        <label><input name="algorithm" value="rc4" type="radio"> RC4</label> &nbsp; &nbsp; &nbsp; &nbsp;
+                        <label><input name="algorithm" value="rabbit" type="radio"> Rabbit</label> <br />
+                    </div>
+                </div>
+            </div>
+            <br />
+            <input id="execute" type="button" value="Go!">
+            <br />
+
+            <br />
+            <div id="result_box" style="display: none;">
+                <textarea readonly id="result" class="form-control" placeholder=""></textarea>
+                <a id="download_dat_file" download="" href="">Download DAT file</a>
+            </div>
+            <br />
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"
+        integrity="sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+
+        let upload_file = document.querySelector('#upload_dat_file');
+        upload_file.addEventListener('click', function (evt) {
+
+            var picker = document.querySelector('#upload_dat_file_picker');
+            picker.click();
+            picker.addEventListener('change', function (e) {
+                const fileList = event.target.files; if (!fileList) return;
+                console.log(fileList);
+                const file = fileList[0]; if (!file) return;
+                var reader = new FileReader();
+                reader.readAsText(file);
+                reader.onload = readerEvent => {
+                    var content = readerEvent.target.result;
+                    console.log('content: ' + content)
+                    document.querySelector('#message').value = content;
+                }
+            });
+            evt.preventDefault();
+            return false;
+        });
+
+        let download_file = document.querySelector('#download_dat_file');
+        download_file.addEventListener('click', function (evt) {
+            var data = document.querySelector('#result').value;
+            var element = this;
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + (data));
+            element.setAttribute('download', 'encrypted.dat');
+            return true;
+        });
+
+        let exec = document.querySelector('#execute');
+        exec.addEventListener('click', function (evt) {
+
+            let message = document.querySelector('#message').value;
+            let key = document.querySelector('#key').value;
+
+            let op = document.querySelector('input[type=radio][name=operation]:checked').value;
+            let alg = document.querySelector('input[type=radio][name=algorithm]:checked').value;
+            if (!op) {
+                alert('No operation selected');
+                return false;
+            }
+            if (!alg) {
+                alert('No algorithm selected');
+                return false;
+            }
+            if (!(alg == 'rabbit' || alg == 'rc4' || alg == 'tripledes')) {
+                alert('Algorithm not selected');
+                return false;
+            }
+            let res = '';
+            if (op == 'enc') {
+                res = encrypter.encrypt(message, key, alg)
+                document.querySelector('#download_dat_file').style.display = 'block';
+            } else if (op == 'dec') {
+                res = encrypter.decrypt(message, key, alg);
+                document.querySelector('#download_dat_file').style.display = 'none';
+                if (!res) {
+                    alert('Message could not be decrypted')
+                    document.querySelector('#result_box').style.display = 'none'
+                    document.querySelector('#result').value = '';
+                    return false;
+                }
+            }
+            console.log('res = ' + res);
+            document.querySelector('#result_box').style.display = 'block'
+            document.querySelector('#result').value = res;
+            return false;
+        });
+
+        var encrypter = (function (CryptoJS) {
+            var funcs = {
+                encrypt: function (inputString, passphrase, alg) {
+                    if (alg == 'rc4') {
+                        return CryptoJS.RC4Drop.encrypt(inputString, passphrase).toString();
+                    } else if (alg == 'tripledes') {
+                        return CryptoJS.TripleDES.encrypt(inputString, passphrase).toString();;
+                    } else {
+                        return CryptoJS.Rabbit.encrypt(inputString, passphrase).toString();;
+                    }
+                    return false;
+                },
+                decrypt: function (encryptedString, passphrase, alg) {
+                    if (alg == 'rc4') {
+                        return CryptoJS.RC4Drop.decrypt(encryptedString, passphrase).toString(CryptoJS.enc.Utf8)
+                    } else if (alg == 'tripledes') {
+                        return CryptoJS.TripleDES.decrypt(encryptedString, passphrase).toString(CryptoJS.enc.Utf8)
+                    } else {
+                        var decripted = CryptoJS.Rabbit.decrypt(encryptedString, passphrase);
+                        return decripted.toString(CryptoJS.enc.Utf8)
+                    }
+                    return false;
+                }
+            };
+            return funcs;
+        })(CryptoJS);
+        var html_str = new XMLSerializer().serializeToString(document);
+
+    </script>
+</body>
+
+</html>
