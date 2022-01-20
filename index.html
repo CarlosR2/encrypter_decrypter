@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Encrypter / Decrypter</title>
     <meta charset="UTF-8">
@@ -11,24 +12,30 @@
         .red {
             color: red
         }
+
         .green {
             color: green
         }
+
         input.focused {
             box-shadow: 0px 0px 5px green;
             background: #fff499;
         }
+
         input {
             max-width: 100%;
         }
+
         body {
             background-color: #f0f3f5;
             color: #333;
             font-family: monospace, Arial, Helvetica, sans-serif;
         }
+
         #app {
             padding: 50px;
         }
+
         .container {
             background-color: #fff;
             padding: 40px;
@@ -36,6 +43,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="" id="app">
         <!-- container -->
@@ -68,7 +76,7 @@
                     <li>Open this website in another device, follow the steps above and introduce the encrypted message
                         and the key: you should see the original message.</li>
                 </ul>
-                 
+
             </div>
             <textarea id="message" class="form-control" placeholder="Message to encrypt / decrypt"></textarea>
             <div style="text-align: right;">
@@ -203,13 +211,17 @@
                     return false;
                 },
                 decrypt: function (encryptedString, passphrase, alg) {
-                    if (alg == 'rc4') {
-                        return CryptoJS.RC4Drop.decrypt(encryptedString, passphrase).toString(CryptoJS.enc.Utf8)
-                    } else if (alg == 'tripledes') {
-                        return CryptoJS.TripleDES.decrypt(encryptedString, passphrase).toString(CryptoJS.enc.Utf8)
-                    } else {
-                        var decripted = CryptoJS.Rabbit.decrypt(encryptedString, passphrase);
-                        return decripted.toString(CryptoJS.enc.Utf8)
+                    try {
+                        if (alg == 'rc4') {
+                            return CryptoJS.RC4Drop.decrypt(encryptedString, passphrase).toString(CryptoJS.enc.Utf8)
+                        } else if (alg == 'tripledes') {
+                            return CryptoJS.TripleDES.decrypt(encryptedString, passphrase).toString(CryptoJS.enc.Utf8)
+                        } else {
+                            var decripted = CryptoJS.Rabbit.decrypt(encryptedString, passphrase);
+                            return decripted.toString(CryptoJS.enc.Utf8)
+                        }
+                    } catch (err) {
+                        return false;
                     }
                     return false;
                 }
